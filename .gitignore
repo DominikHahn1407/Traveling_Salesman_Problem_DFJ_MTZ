@@ -1,0 +1,100 @@
+# VS Code
+.vscode/*
+# !.vscode/settings.json
+# !.vscode/extensions.json
+# !.vscode/launch.json
+# !.vscode/tasks.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.tox/
+.nox/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.virtualenv/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-wheel-metadata/
+
+# Logs
+*.log
+logs/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs / editors
+.idea/
+*.swp
+*.swo
+
+# Python-specific data / outputs
+*.sqlite3
+*.db
+*.pkl
+*.pickle
+*.joblib
+
+# Machine learning outputs
+checkpoints/
+models/
+runs/
+wandb/
+mlruns/
+tensorboard/
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.onnx
+
+# Data folders
+data/
+datasets/
+output/
+outputs/
+results/
+tmp/
+temp/
+
+# CSV / Excel outputs
+*.csv
+*.xlsx
+*.xls
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
