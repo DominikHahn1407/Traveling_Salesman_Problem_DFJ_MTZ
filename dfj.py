@@ -1,79 +1,266 @@
-from scipy.optimize import milp, LinearConstraint, Bounds
 import numpy as np
-from collections import deque, defaultdict
+from scipy.optimize import milp, Bounds, LinearConstraint
 
-## DFJ Formulierung
-def extract_active_edges(solution_edges):
-    subsets = defaultdict(set)
-    for (i, j), value in solution_edges:
-        if value > 0.5:
-            subsets[i].add(j)
-            subsets[j].add(i)
-    return subsets
 
-def find_subtour(start, subsets, visited):
-    tour = []
-    queue = deque([start])
-    while queue:
-        node = queue.popleft()
-        if node not in visited:
-            visited.add(node)
-            tour.append(node)
-            queue.extend(subsets[node] - visited)
+def find_subtours_from_solution(x, edges, n, threshold=0.5):
+    """
+    Find all subtours in the current MILP solution.
+
+    Because the degree constraints enforce exactly one outgoing and one incoming
+    edge for every node, the selected edges form one or more directed cycles.
+    """
+    outgoing = {}
+
+    for idx, value in enumerate(x):
+        if value > threshold:
+            i, j = edges[idx]
+            outgoing[i] = j
+
+    visited = set()
+    subtours = []
+
+    for start in range(n):
+        if start in visited:
+            continue
+
+        tour = []
+        current = start
+
+        while current not in tour:
+            tour.append(current)
+            visited.add(current)
+
+            if current not in outgoing:
+                break
+
+            current = outgoing[current]
+
+        subtours.append(tour)
+
+    return subtours
+
+
+def build_dfj_subtour_constraint(subtour, edge_to_idx, num_edges):
+    """
+    Build one DFJ subtour elimination constraint.
+
+    DFJ constraint:
+
+        sum_{i in S, j in S, i != j} x_ij <= |S| - 1
+
+    This prevents the nodes in S from forming an isolated subtour.
+    """
+    row = np.zeros(num_edges)
+
+    for i in subtour:
+        for j in subtour:
+            if i != j:
+                row[edge_to_idx[(i, j)]] = 1
+
+    rhs = len(subtour) - 1
+
+    return row, rhs
+
+
+def extract_active_edges(res, edges, threshold=0.5):
+    """
+    Extract all selected edges from the final solution.
+    """
+    active_edges = []
+
+    for idx, value in enumerate(res.x):
+        if value > threshold:
+            active_edges.append(edges[idx])
+
+    return active_edges
+
+
+def extract_tour(res, edges, n, start_node=0, threshold=0.5):
+    """
+    Extract the final Hamiltonian tour from the result.
+    """
+    outgoing = {}
+
+    for idx, value in enumerate(res.x):
+        if value > threshold:
+            i, j = edges[idx]
+            outgoing[i] = j
+
+    tour = [start_node]
+    current = start_node
+
+    while True:
+        current = outgoing[current]
+
+        if current == start_node:
+            break
+
+        tour.append(current)
+
     return tour
 
-def generate_constraints_edges(subtour, edges):
-    indices = [
-        edges.index((i, j)) for i in subtour for j in subtour if i != j and (i, j) in edges
-    ]
-    return (indices, len(subtour) - 1)
 
-def subtour_constraints_dynamic(solution_edges, n, edges):
-    subsets = extract_active_edges(solution_edges)
-    visited = set()
-    constraints = []
-    for node in range(n):
-        if node not in visited:
-            subtour = find_subtour(node, subsets, visited)
-            if len(subtour) < n and len(subtour) > 1:
-                constraint = generate_constraints_edges(subtour, edges)
-                constraints.append(constraint)
-    return constraints
+def solve_tsp_dfj(cost_matrix, max_iterations=200, threshold=0.5):
+    """
+    Solve the directed Traveling Salesman Problem using the DFJ formulation
+    with dynamic subtour elimination constraints.
 
-def solve_tsp_dfj(cost_matrix):
-    n = len(cost_matrix)
+    This is a cutting-plane implementation:
+    1. Solve the assignment problem.
+    2. Detect subtours.
+    3. Add violated DFJ subtour constraints.
+    4. Re-solve until one complete tour remains.
+
+    Parameters
+    ----------
+    cost_matrix : array-like
+        Square matrix containing the travel costs.
+    max_iterations : int
+        Maximum number of subtour elimination iterations.
+    threshold : float
+        Threshold for deciding whether an edge is active.
+
+    Returns
+    -------
+    res : scipy.optimize.OptimizeResult
+        Final MILP result.
+    model_info : dict
+        Additional model information useful for memory measurement,
+        debugging and extracting the final tour.
+    """
+    cost_matrix = np.asarray(cost_matrix, dtype=float)
+    n = cost_matrix.shape[0]
+
+    if cost_matrix.shape[0] != cost_matrix.shape[1]:
+        raise ValueError("cost_matrix must be square.")
+
+    # Decision variables x_ij for all directed edges i -> j with i != j
     edges = [(i, j) for i in range(n) for j in range(n) if i != j]
-    c = [cost_matrix[i][j] for i, j in edges]
-    A_eq = np.zeros((2*n, len(edges)))
+    edge_to_idx = {edge: idx for idx, edge in enumerate(edges)}
+    num_edges = len(edges)
+
+    # Objective vector
+    c = np.array([cost_matrix[i, j] for i, j in edges], dtype=float)
+
+    # Binary variables
+    integrality = np.ones(num_edges, dtype=int)
+
+    # Variable bounds: 0 <= x_ij <= 1
+    bounds = Bounds(
+        lb=np.zeros(num_edges),
+        ub=np.ones(num_edges)
+    )
+
+    # Degree constraints:
+    # Every node has exactly one outgoing and one incoming edge.
+    A_degree = np.zeros((2 * n, num_edges))
+
     for i in range(n):
         for j in range(n):
             if i != j:
-                A_eq[i, edges.index((i, j))] = 1
-                A_eq[n + i, edges.index((j, i))] = 1
-    lb = np.zeros(len(edges))
-    ub = np.ones(len(edges))
-    bounds = Bounds(lb, ub)
-    A_combined = A_eq
-    b_combined = np.ones(2 * n)
-    count = 0
-    while True:
+                # Outgoing edge from i to j
+                A_degree[i, edge_to_idx[(i, j)]] = 1
+
+                # Incoming edge to i from j
+                A_degree[n + i, edge_to_idx[(j, i)]] = 1
+
+    degree_constraint = LinearConstraint(
+        A_degree,
+        lb=np.ones(2 * n),
+        ub=np.ones(2 * n)
+    )
+
+    # These lists store dynamically added DFJ constraints.
+    subtour_rows = []
+    subtour_rhs = []
+
+    final_constraints = [degree_constraint]
+
+    for iteration in range(max_iterations):
+        constraints = [degree_constraint]
+
+        # Add already generated subtour elimination constraints.
+        if subtour_rows:
+            A_subtour = np.vstack(subtour_rows)
+            b_subtour = np.array(subtour_rhs)
+
+            subtour_constraint = LinearConstraint(
+                A_subtour,
+                lb=-np.inf * np.ones(len(subtour_rhs)),
+                ub=b_subtour
+            )
+
+            constraints.append(subtour_constraint)
+
         res = milp(
-            c=c, 
-            constraints=LinearConstraint(A_combined, lb=b_combined, ub=b_combined),
+            c=c,
+            integrality=integrality,
             bounds=bounds,
+            constraints=constraints,
+            options={
+                "disp": False
+            }
         )
-        if not res.success or count > 200:
-            raise Exception("Not sucessfull")
-        solution_edges = [(edges[i], res.x[i]) for i in range(len(edges)) if res.x[i] > 0.5]
-        sec = subtour_constraints_dynamic(solution_edges, n, edges)
-        if not sec:
-            break
-        new_A_sec = np.zeros((len(sec), len(edges)))
-        new_b_sec = []
-        for k, (indices, rhs) in enumerate(sec):
-            new_A_sec[k, indices] = 1
-            new_b_sec.append(rhs)
-        A_combined = np.vstack([A_combined, new_A_sec])
-        b_combined = np.hstack([b_combined, new_b_sec])
-        count += 1
-    return res, (LinearConstraint(A_combined, lb=b_combined, ub=b_combined), bounds)
+
+        if not res.success:
+            raise RuntimeError(f"DFJ MILP failed: {res.message}")
+
+        subtours = find_subtours_from_solution(
+            x=res.x,
+            edges=edges,
+            n=n,
+            threshold=threshold
+        )
+
+        violated_subtours = [
+            tour for tour in subtours
+            if 1 < len(tour) < n
+        ]
+
+        # No subtours means we found one valid Hamiltonian cycle.
+        if not violated_subtours:
+            final_constraints = constraints
+
+            active_edges = extract_active_edges(
+                res=res,
+                edges=edges,
+                threshold=threshold
+            )
+
+            tour = extract_tour(
+                res=res,
+                edges=edges,
+                n=n,
+                start_node=0,
+                threshold=threshold
+            )
+
+            model_info = {
+                "constraints": final_constraints,
+                "bounds": bounds,
+                "edges": edges,
+                "active_edges": active_edges,
+                "tour": tour,
+                "iterations": iteration + 1,
+                "num_variables": num_edges,
+                "num_degree_constraints": 2 * n,
+                "num_subtour_constraints": len(subtour_rows),
+                "objective_value": res.fun
+            }
+
+            return res, model_info
+
+        # Add one DFJ constraint for each detected subtour.
+        for subtour in violated_subtours:
+            row, rhs = build_dfj_subtour_constraint(
+                subtour=subtour,
+                edge_to_idx=edge_to_idx,
+                num_edges=num_edges
+            )
+
+            subtour_rows.append(row)
+            subtour_rhs.append(rhs)
+
+    raise RuntimeError(
+        f"DFJ did not converge after {max_iterations} iterations."
+    )
