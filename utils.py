@@ -5,25 +5,20 @@ import sys
 import json
 import os
 import time
-from stopwatch import Stopwatch
 from collections import deque, defaultdict
 from scipy.optimize import milp, LinearConstraint, Bounds
 from IPython.display import clear_output
 
 
-seed = 312
-np.random.seed(seed)
-
-def create_distance_matrix(n, max_value=0):
-    matrix = np.random.randint(1000, 9999, size=(n, n))
-
-    np.fill_diagonal(matrix, max_value)
-
-    for i in range(n):
-        for j in range(i + 1, n):
-            matrix[j, i] = matrix[i, j]
-
-    return matrix
+def create_distance_matrix(n, seed, max_value=0):
+    rng = np.random.default_rng(seed)
+    matrix = rng.integers(1000, 9999, size=(n, n), dtype=np.int64)
+    np.fill_diagonal(matrix, 0)
+    # Optional: make it symmetric for symmetric TSP
+    cost_matrix = np.triu(matrix, 1)
+    cost_matrix = cost_matrix + cost_matrix.T
+    np.fill_diagonal(cost_matrix, 0)
+    return cost_matrix
 
 
 def get_total_size(obj, seen=None):

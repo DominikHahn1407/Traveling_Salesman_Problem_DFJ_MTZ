@@ -29,14 +29,12 @@ def measure_memory(solver, cost_matrix):
 
 def logic(j):
     results = []
-
     for n in range(10, 201, 10):
         clear_output(wait=True)
         print(f"Calculating run {j} | n={n}")
 
-        # seed = random.randint(1, 10000)
-        random.seed(j)
-        cost_matrix = create_distance_matrix(n)
+        seed = j * 10_000 + n
+        cost_matrix = create_distance_matrix(n, seed=seed)
 
         # Time DFJ
         print(f"Timing DFJ - run {j} | n={n}")
@@ -79,6 +77,6 @@ def logic(j):
 
         save_results_to_file(results, j)
 
-logic(51)
-# for i in range(31, 51, 1):
-#     logic(i)
+if __name__ == "__main__":
+    for i in range(3, 101, 1):
+        logic(i)
