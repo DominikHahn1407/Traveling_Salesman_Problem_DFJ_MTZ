@@ -62,10 +62,43 @@ def list_element_sizes(input_list):
     return sizes
 
 
-def save_results_to_file(results, i):
+def save_results_to_file(results, i, direct_path=None):
+    if direct_path != None:
+        with open(direct_path, "w") as file:
+            json.dump(results, file, indent=4)
     desktop_path = r"results"
     os.makedirs(desktop_path, exist_ok=True)
     file_path = os.path.join(desktop_path, f"results({i}).json")
 
     with open(file_path, "w") as file:
         json.dump(results, file, indent=4)
+
+def read_tsplib_coordinates(file_path):
+    coords = []
+    reading_coords = False
+    with open(file_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line == "NODE_COORD_SECTION":
+                reading_coords = True
+                continue
+            if line == "EOF":
+                break
+            if reading_coords:
+                parts = line.split()
+                if len(parts) >= 3:
+                    x = float(parts[1])
+                    y = float(parts[2])
+                    coords.append((x, y))
+    return np.array(coords)
+
+def create_distance_matrix_from_coords(coords):
+    n = len(coords)
+    cost_matrix = np.zeros((n, n), dtype=np.int64)
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                dx = coords[i, 0] - coords[j, 0]
+                dy = coords[i, 1] - coords[j, 1]
+                cost_matrix[i, j] = int(round(np.sqrt(dx**2 + dy**2)))
+    return cost_matrix
