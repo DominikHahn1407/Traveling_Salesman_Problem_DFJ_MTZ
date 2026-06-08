@@ -1,0 +1,202 @@
+[
+    {
+        "n": 10,
+        "dfj_time_ms": 8.801000018138438,
+        "mtz_time_ms": 2.176800015149638,
+        "dfj_size_bytes_1": 48122,
+        "mtz_size_bytes_1": 99215,
+        "dfj_size_bytes_2": 32418,
+        "mtz_size_bytes_2": 84119,
+        "seed": 97
+    },
+    {
+        "n": 20,
+        "dfj_time_ms": 21.327199996449053,
+        "mtz_time_ms": 11.514099984196946,
+        "dfj_size_bytes_1": 256946,
+        "mtz_size_bytes_1": 1319375,
+        "dfj_size_bytes_2": 179118,
+        "mtz_size_bytes_2": 1248591,
+        "seed": 97
+    },
+    {
+        "n": 30,
+        "dfj_time_ms": 101.12279999884777,
+        "mtz_time_ms": 51.160499977413565,
+        "dfj_size_bytes_1": 769098,
+        "mtz_size_bytes_1": 6494735,
+        "dfj_size_bytes_2": 588222,
+        "mtz_size_bytes_2": 6349911,
+        "seed": 97
+    },
+    {
+        "n": 40,
+        "dfj_time_ms": 176.74339999211952,
+        "mtz_time_ms": 151.30929998122156,
+        "dfj_size_bytes_1": 1759426,
+        "mtz_size_bytes_1": 20377295,
+        "dfj_size_bytes_2": 1434158,
+        "mtz_size_bytes_2": 20151975,
+        "seed": 97
+    },
+    {
+        "n": 50,
+        "dfj_time_ms": 318.7411999970209,
+        "mtz_time_ms": 379.9624999810476,
+        "dfj_size_bytes_1": 3209658,
+        "mtz_size_bytes_1": 49639055,
+        "dfj_size_bytes_2": 2722750,
+        "mtz_size_bytes_2": 49261263,
+        "seed": 97
+    },
+    {
+        "n": 60,
+        "dfj_time_ms": 767.2112000000197,
+        "mtz_time_ms": 762.4354000145104,
+        "dfj_size_bytes_1": 5596626,
+        "mtz_size_bytes_1": 102872015,
+        "dfj_size_bytes_2": 4942574,
+        "mtz_size_bytes_2": 102274703,
+        "seed": 97
+    },
+    {
+        "n": 70,
+        "dfj_time_ms": 232.01619999599643,
+        "mtz_time_ms": 1414.3010999832768,
+        "dfj_size_bytes_1": 8406442,
+        "mtz_size_bytes_1": 190588175,
+        "dfj_size_bytes_2": 7554174,
+        "mtz_size_bytes_2": 189731294,
+        "seed": 97
+    },
+    {
+        "n": 80,
+        "dfj_time_ms": 391.53630001237616,
+        "mtz_time_ms": 2467.36010001041,
+        "dfj_size_bytes_1": 11701634,
+        "mtz_size_bytes_1": 325219535,
+        "dfj_size_bytes_2": 10621322,
+        "mtz_size_bytes_2": 324063183,
+        "seed": 97
+    },
+    {
+        "n": 90,
+        "dfj_time_ms": 327.3705999890808,
+        "mtz_time_ms": 4020.8434000087436,
+        "dfj_size_bytes_1": 16878266,
+        "mtz_size_bytes_1": 521118095,
+        "dfj_size_bytes_2": 15539307,
+        "mtz_size_bytes_2": 519622223,
+        "seed": 97
+    },
+    {
+        "n": 100,
+        "dfj_time_ms": 2619.9109999870416,
+        "mtz_time_ms": 6274.83039998333,
+        "dfj_size_bytes_1": 23473906,
+        "mtz_size_bytes_1": 794555855,
+        "dfj_size_bytes_2": 21847044,
+        "mtz_size_bytes_2": 792680463,
+        "seed": 97
+    },
+    {
+        "n": 110,
+        "dfj_time_ms": 7682.365800021216,
+        "mtz_time_ms": 10188.548500009347,
+        "dfj_size_bytes_1": 30925210,
+        "mtz_size_bytes_1": 1163724815,
+        "dfj_size_bytes_2": 28979025,
+        "mtz_size_bytes_2": 1161429903,
+        "seed": 97
+    },
+    {
+        "n": 120,
+        "dfj_time_ms": 9295.920600008685,
+        "mtz_time_ms": 15231.610599992564,
+        "dfj_size_bytes_1": 39905954,
+        "mtz_size_bytes_1": 1648736975,
+        "dfj_size_bytes_2": 37610561,
+        "mtz_size_bytes_2": 1645982543,
+        "seed": 97
+    },
+    {
+        "n": 130,
+        "dfj_time_ms": 9163.844099995913,
+        "mtz_time_ms": 19980.06160001387,
+        "dfj_size_bytes_1": 49941098,
+        "mtz_size_bytes_1": 2271624335,
+        "dfj_size_bytes_2": 47266286,
+        "mtz_size_bytes_2": 2268371687,
+        "seed": 97
+    },
+    {
+        "n": 140,
+        "dfj_time_ms": 22821.08409999637,
+        "mtz_time_ms": 25459.22469999641,
+        "dfj_size_bytes_1": 62478226,
+        "mtz_size_bytes_1": 3056338895,
+        "dfj_size_bytes_2": 59394126,
+        "mtz_size_bytes_2": 3052546615,
+        "seed": 97
+    },
+    {
+        "n": 150,
+        "dfj_time_ms": 1510.2117999922484,
+        "mtz_time_ms": 33822.30639999034,
+        "dfj_size_bytes_1": 73358330,
+        "mtz_size_bytes_1": 4028752655,
+        "dfj_size_bytes_2": 69836891,
+        "mtz_size_bytes_2": 4024379663,
+        "seed": 97
+    },
+    {
+        "n": 160,
+        "dfj_time_ms": 8848.653799999738,
+        "mtz_time_ms": 44086.77289998741,
+        "dfj_size_bytes_1": 88583074,
+        "mtz_size_bytes_1": 5216657615,
+        "dfj_size_bytes_2": 84586195,
+        "mtz_size_bytes_2": 5211665103,
+        "seed": 97
+    },
+    {
+        "n": 170,
+        "dfj_time_ms": 17448.11669999035,
+        "mtz_time_ms": 55859.11969997687,
+        "dfj_size_bytes_1": 107620490,
+        "mtz_size_bytes_1": 6649765775,
+        "dfj_size_bytes_2": 103127854,
+        "mtz_size_bytes_2": 6644113743,
+        "seed": 97
+    },
+    {
+        "n": 180,
+        "dfj_time_ms": 15346.821499988437,
+        "mtz_time_ms": 73836.56950001023,
+        "dfj_size_bytes_1": 128941074,
+        "mtz_size_bytes_1": 8359709135,
+        "dfj_size_bytes_2": 123910574,
+        "mtz_size_bytes_2": 8353358775,
+        "seed": 97
+    },
+    {
+        "n": 190,
+        "dfj_time_ms": 8009.782300010556,
+        "mtz_time_ms": 88989.23809998087,
+        "dfj_size_bytes_1": 151752154,
+        "mtz_size_bytes_1": 10380039695,
+        "dfj_size_bytes_2": 146159766,
+        "mtz_size_bytes_2": 10372949815,
+        "seed": 97
+    },
+    {
+        "n": 200,
+        "dfj_time_ms": 30187.532000010833,
+        "mtz_time_ms": 109165.63170001609,
+        "dfj_size_bytes_1": 177427170,
+        "mtz_size_bytes_1": 12746229455,
+        "dfj_size_bytes_2": 171242558,
+        "mtz_size_bytes_2": 12738360055,
+        "seed": 97
+    }
+]
