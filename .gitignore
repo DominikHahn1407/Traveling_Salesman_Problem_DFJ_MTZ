@@ -99,4 +99,4 @@ temp/
 *.tar.gz
 *.rar
 
-results/
+# results/
